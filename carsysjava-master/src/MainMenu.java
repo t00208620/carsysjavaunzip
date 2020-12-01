@@ -2,15 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 
 public class MainMenu extends JFrame implements ActionListener {
-
-
-    //private static Car[] allCars; //change this so that it will be an array-list
 
     private static ArrayList<Car> allCars;
     private static ArrayList<Booking> allBookings;
@@ -20,19 +18,21 @@ public class MainMenu extends JFrame implements ActionListener {
     JMenu bookingsMenu;
     JMenu adminMenu;
 
-    JMenuItem carItem1;
-    JMenuItem carItem2;
-    JMenuItem carItem3;
-    JMenuItem carItem4;
+    JMenuItem addCar;
+    JMenuItem removeCar;
+    JMenuItem updateCar;
+    JMenuItem viewCars;
 
-    JMenuItem bookItem1;
-    JMenuItem bookItem2;
-    JMenuItem bookItem3;
-    JMenuItem bookItem4;
-    JMenuItem adminItem1;
+    JMenuItem makeBooking;
+    JMenuItem changeBooking;
+    JMenuItem cancelBooking;
+    JMenuItem viewBookings;
+
 
     JPanel jp = new JPanel();
     JLabel jl = new JLabel();
+
+    private static File file; //added by JB
 
 
     public MainMenu() {
@@ -61,66 +61,62 @@ public class MainMenu extends JFrame implements ActionListener {
         carsMenu = new JMenu("Cars");
         carsMenu.setMnemonic(KeyEvent.VK_C);
 
-        carItem1 = new JMenuItem("Add Car");
-        carItem1.setMnemonic(KeyEvent.VK_A);
-        carItem1.addActionListener(this);
-        carsMenu.add(carItem1);
+        addCar = new JMenuItem("Add Car");
+        addCar.setMnemonic(KeyEvent.VK_A);
+        addCar.addActionListener(this);
+        carsMenu.add(addCar);
 
-        carItem2 = new JMenuItem("Remove Car");
-        carItem2.setMnemonic(KeyEvent.VK_R);
-        carItem2.addActionListener(this);
-        carsMenu.add(carItem2);
+        removeCar = new JMenuItem("Remove Car");
+        removeCar.setMnemonic(KeyEvent.VK_R);
+        removeCar.addActionListener(this);
+        carsMenu.add(removeCar);
 
 
-        carItem3 = new JMenuItem("Update Car");
-        carItem3.setMnemonic(KeyEvent.VK_U);
-        carItem3.addActionListener(this);
-        carsMenu.add(carItem3);
+        updateCar = new JMenuItem("Update Car");
+        updateCar.setMnemonic(KeyEvent.VK_U);
+        updateCar.addActionListener(this);
+        carsMenu.add(updateCar);
 
-        carItem4 = new JMenuItem("View Cars");
-        carItem4.setMnemonic(KeyEvent.VK_V);
-        carItem4.addActionListener(this);
-        carsMenu.add(carItem4);
+        viewCars = new JMenuItem("View Cars");
+        viewCars.setMnemonic(KeyEvent.VK_V);
+        viewCars.addActionListener(this);
+        carsMenu.add(viewCars);
 
 
         bookingsMenu = new JMenu("Bookings");
         bookingsMenu.setMnemonic(KeyEvent.VK_B);
 
-        bookItem1 = new JMenuItem("Make Booking");
-        bookItem1.setMnemonic(KeyEvent.VK_M);
-        bookItem1.addActionListener(this);
-        bookingsMenu.add(bookItem1);
+        makeBooking = new JMenuItem("Make Booking");
+        makeBooking.setMnemonic(KeyEvent.VK_M);
+        makeBooking.addActionListener(this);
+        bookingsMenu.add(makeBooking);
 
-        bookItem2 = new JMenuItem("Change Booking");
-        bookItem2.setMnemonic(KeyEvent.VK_H);
-        bookItem2.addActionListener(this);
-        bookingsMenu.add(bookItem2);
+        changeBooking = new JMenuItem("Change Booking");
+        changeBooking.setMnemonic(KeyEvent.VK_H);
+        changeBooking.addActionListener(this);
+        bookingsMenu.add(changeBooking);
 
-        bookItem3 = new JMenuItem("Cancel Booking");
-        bookItem3.setMnemonic(KeyEvent.VK_C);
-        bookItem3.addActionListener(this);
-        bookingsMenu.add(bookItem3);
+        cancelBooking = new JMenuItem("Cancel Booking");
+        cancelBooking.setMnemonic(KeyEvent.VK_C);
+        cancelBooking.addActionListener(this);
+        bookingsMenu.add(cancelBooking);
 
-        bookItem4 = new JMenuItem("View Bookings");
-        bookItem4.setMnemonic(KeyEvent.VK_V);
-        bookItem4.addActionListener(this);
-        bookingsMenu.add(bookItem4);
-
-
-        adminMenu = new JMenu("Admin");
-        adminMenu.setMnemonic(KeyEvent.VK_A);
-
-        adminItem1 = new JMenuItem("Login");
-        adminItem1.setMnemonic(KeyEvent.VK_L);
-        adminItem1.addActionListener(this);
-        adminMenu.add(adminItem1);
+        viewBookings = new JMenuItem("View Bookings");
+        viewBookings.setMnemonic(KeyEvent.VK_V);
+        viewBookings.addActionListener(this);
+        bookingsMenu.add(viewBookings);
 
 
         menuBar.add(carsMenu);
         menuBar.add(bookingsMenu);
-        menuBar.add(adminMenu);
 
         setVisible(true);
+
+        createFileMenu();
+
+        readBookingsFromFile();
+
+
     }
 
     public static void main(String[] args) throws Exception {
@@ -139,18 +135,104 @@ public class MainMenu extends JFrame implements ActionListener {
         Booking b3 = new Booking("Karen Anderson", "karen@gmail.com", "Deluxe", 3, new GregorianCalendar(2021, 10, 7));
         Booking b4 = new Booking("Sheila Foley", "sheila@gmail.com", "Premium", 2, new GregorianCalendar(2020, 5, 17));
 
-        allBookings = new ArrayList<>(Arrays.asList(b1, b2, b3, b4));
 
-/*****************************************************
- *     Code from lecturer John Brosnan
- *    Title:   MainMenu.java (verious lines including array of cars)
- *    Author:  John Brosnan
- *    Site owner/sponsor:  not available
- *    Date: 24/11/2020
- *    Code version:  not applicable
- *    Availability:  not applicable
- *    Modified:  Code refactore
- *****************************************************/
+        //JB - only set allBookings to this "prepopulated array-list if the file bookings.data doesn't already exist
+        //You may need to do this type of thing also for the cars.data file
+        if (!file.exists())
+            allBookings = new ArrayList<>(Arrays.asList(b1, b2, b3, b4));
+    }
+
+    /*****************************************************
+     *     Code from lecturer John Brosnan
+     *    Title:   MainMenu.java (verious lines including array of cars)
+     *    Author:  John Brosnan
+     *    Site owner/sponsor:  not available
+     *    Date: 24/11/2020
+     *    Code version:  not applicable
+     *    Availability:  not applicable
+     *    Modified:  Code refactore
+     *****************************************************/
+
+    public static void saveBookingsToFile() throws IOException {
+
+        //put this code into a method called saveCarsToFile() and then call this when when a window-closing event occurs
+        //create a private inner class called WindowEventHandler and have that class inherit from the WindowAdapter class
+        //you'll override the windowClosing() method
+
+        File outFile = new File("bookings.data");
+        FileOutputStream outStream = new FileOutputStream(outFile);
+        ObjectOutputStream objectOutStream = new ObjectOutputStream(outStream);
+
+        for (Booking b : allBookings) {
+            System.out.println(b);
+        }
+
+        objectOutStream.writeObject(allBookings); //in reality this writing would occur when you go to close the application
+        objectOutStream.close();
+        outStream.close();
+    }
+
+    public void createFileMenu() {
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Confirmation", JOptionPane.YES_NO_OPTION);
+
+                if (option == JOptionPane.YES_OPTION) {
+                    try {
+                        saveBookingsToFile();
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                    JOptionPane.showMessageDialog(null, "Data saved successfully", "Saved", JOptionPane.INFORMATION_MESSAGE);
+
+                    System.exit(0);
+                }
+            }
+        });
+    }
+
+    public void readBookingsFromFile() {
+
+        try {
+
+            file = new File("bookings.data");
+
+            if (file.exists()) {
+
+                ObjectInputStream is = new ObjectInputStream(new FileInputStream(file));
+                allBookings = (ArrayList<Booking>) is.readObject();
+                is.close();
+
+                for (Booking b : allBookings) {
+                    System.out.println(b);
+                }
+
+                JOptionPane.showMessageDialog(null, file.getName() + " file loaded into the system", "Open", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                file.createNewFile();
+                JOptionPane.showMessageDialog(null, "File just created!!", "Created " + file.getName() + " file", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (ClassNotFoundException cnfe) {
+            JOptionPane.showMessageDialog(null, "Class of object deserialised not a match for anything used in this application", "Error", JOptionPane.ERROR_MESSAGE);
+            cnfe.printStackTrace();
+        } catch (FileNotFoundException fnfe) {
+            JOptionPane.showMessageDialog(null, "File not found", "Error", JOptionPane.ERROR_MESSAGE);
+            fnfe.printStackTrace();
+        } catch (IOException ioe) {
+            JOptionPane.showMessageDialog(null, "Problem reading from the file", "Error", JOptionPane.ERROR_MESSAGE);
+            ioe.printStackTrace();
+        }
+    }
+
+    public void saveCarsToFile() throws IOException {
+
+
+        //put this code into a method called saveCarsToFile() and then call this when when a window-closing event occurs
+        //create a private inner class called WindowEventHandler and have that class inherit from the WindowAdapter class
+        //you'll override the windowClosing() method
+
 
         File outFile = new File("cars.data");
         FileOutputStream outStream = new FileOutputStream(outFile);
@@ -158,38 +240,31 @@ public class MainMenu extends JFrame implements ActionListener {
         objectOutStream.writeObject(allCars); //in reality this writing would occur when you go to close the application
         outStream.close();
 
+    }
+
+
+    public static void readCarsFromFile() throws IOException, ClassNotFoundException {
+        //put this code into a method called readCarsFromFile() and then call this when whe the application launches
+
         File inFile = new File("cars.data");
         FileInputStream inStream = new FileInputStream(inFile);
         ObjectInputStream objectInStream = new ObjectInputStream(inStream);
         allCars = (ArrayList<Car>) objectInStream.readObject();//in reality this reading would occur when the application is launched
         inStream.close();
-
-        objectOutStream.writeObject(allBookings);
-        allBookings = (ArrayList<Booking>) objectInStream.readObject();
-        inStream.close();
     }
 
     public static void viewCars(ArrayList<Car> allCars) {
 
-        JComboBox carsCombo = new JComboBox();
-        JTextArea output = new JTextArea();
-
-        if (allCars.size() < 1) {
-            JOptionPane.showMessageDialog(null, "No Cars added yet", "Error", JOptionPane.WARNING_MESSAGE);
-        } else {
-            Iterator<Car> iterator = allCars.iterator();
-
-            while (iterator.hasNext()) {
-                carsCombo.addItem(iterator.next().getRegNo() + "\n");
-            }
-
-            JOptionPane.showMessageDialog(null, carsCombo, "Select a Registration Number to view car", JOptionPane.PLAIN_MESSAGE);
-
-            int selected = carsCombo.getSelectedIndex();
-            output.append(allCars.get(selected).toString());
-
-            JOptionPane.showMessageDialog(null, output, "Car Details", JOptionPane.PLAIN_MESSAGE);
+        String allCarData = "";
+        Car cr;
+        Iterator<Car> iterator = allCars.iterator();
+        while (iterator.hasNext()) {
+            cr = iterator.next();
+            if (cr != null)
+                allCarData += cr + "\n";
         }
+        JOptionPane.showMessageDialog(null, allCarData,
+                "List of all Bookings", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public static void viewBookings(ArrayList<Booking> allBookings) {
@@ -199,46 +274,47 @@ public class MainMenu extends JFrame implements ActionListener {
         Iterator<Booking> iterator = allBookings.iterator();
         while (iterator.hasNext()) {
             br = iterator.next();
+            System.out.println(br);
             if (br != null)
                 allBookingData += br + "\n";
         }
         JOptionPane.showMessageDialog(null, allBookingData,
-                "List of all Cars", JOptionPane.INFORMATION_MESSAGE);
+                "List of all Bookings", JOptionPane.INFORMATION_MESSAGE);
     }
 
 
     public void actionPerformed(ActionEvent e) {
 
-        if (e.getSource() == carItem1) {
+        if (e.getSource() == addCar) {
             addCar(allCars);
         }
-        if (e.getSource() == carItem2)
+        if (e.getSource() == removeCar)
 
-        if (e.getSource() == carItem3)
+            if (e.getSource() == updateCar)
 
-        if (e.getSource() == carItem4) {
-            viewCars(allCars);
-        }
+                if (e.getSource() == viewCars) {
+                    viewCars(allCars);
+                }
 
-        if (e.getSource() == bookItem1) {
+        if (e.getSource() == makeBooking) {
             addBooking(allBookings);
         }
 
-        if (e.getSource() == bookItem2) {
+        if (e.getSource() == changeBooking) {
+            changeBooking(allBookings);
 
         }
-        if (e.getSource() == bookItem3) {
+        if (e.getSource() == cancelBooking) {
+            cancelBooking(allBookings);
 
         }
 
-        if (e.getSource() == bookItem4) {
+        if (e.getSource() == viewBookings) {
             viewBookings(allBookings);
         }
 
-        if (e.getSource() == adminItem1) {
-
-        }
     }
+
 
     public static void addCar(ArrayList<Car> allCarsList) {
 
@@ -265,12 +341,13 @@ public class MainMenu extends JFrame implements ActionListener {
     public static void addBooking(ArrayList<Booking> allBookingsList) {
 
         String name = "", email = "", carClass = "", noOfDaysAsString = "", collectDate = "";
+        int i = 0;
 
         name = JOptionPane.showInputDialog("Enter the customers name");
         email = JOptionPane.showInputDialog("Enter the customers email address");
         carClass = JOptionPane.showInputDialog("Enter the Class of Car wanted (Premium,economy or deluxe)");
         noOfDaysAsString = JOptionPane.showInputDialog("Enter the Number Of Days the car is to be rented for");
-        collectDate = JOptionPane.showInputDialog("Enter the date the car is to be collected (YYYY-MM-DD)");
+        collectDate = JOptionPane.showInputDialog("Enter the date the car is to be collected (DD-MM-YYYY)");
         int noOfDays = Integer.parseInt(noOfDaysAsString);
         int day = Integer.parseInt(collectDate.substring(0, 2));
         int month = Integer.parseInt(collectDate.substring(3, 5));
@@ -280,11 +357,92 @@ public class MainMenu extends JFrame implements ActionListener {
 
         allBookingsList.add(b5);
 
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy");
+
         JOptionPane.showMessageDialog(null, "The following Booking details has been added to the system:" +
                 "\n" + name + "\n" + email + "\n" + carClass + "\n" + noOfDaysAsString +
-                "\n" + collectDate);
+                "\n" + dateFormatter.format(allBookings.get(i).getCollectDate().getTime()));
+    }
+
+    public static void cancelBooking(ArrayList<Booking> cancelList) {
+
+        String name = "", answer = "";
+        int i = 0;
+        if (i == allBookings.size())
+            JOptionPane.showMessageDialog(null, "That name could not be found!");
+
+        name = JOptionPane.showInputDialog("Name of customer you would like to remove: ");
+
+
+        for (i = 0; i < allBookings.size(); i++)
+            if (allBookings.get(i).getName().equalsIgnoreCase(name)) {
+                JOptionPane.showMessageDialog(null, "Found " + name + "!");
+
+
+                JOptionPane.showMessageDialog(null, "The current booking is:" + allBookings.get(i));
+                answer = JOptionPane.showInputDialog("To remove this person, enter yes: ");
+
+
+                if (answer.equalsIgnoreCase("yes")) {
+                    allBookings.remove(allBookings.get(i));
+                    i--;
+                }
+
+                break;
+            }
+    }
+
+    public void changeBooking(ArrayList<Booking> changeList) {
+
+        String name = "", email = "", carClass="", noOfDaysAsString="";
+        int i;
+        GregorianCalendar collectDate;
+
+        for (i = 0; i < allBookings.size(); i++)
+            if (allBookings.get(i).getName().equalsIgnoreCase(name)) {
+                JOptionPane.showMessageDialog(null,"Found " + name + "!");
+                break;
+            }
+
+        if (i == allBookings.size())
+
+            name = JOptionPane.showInputDialog("Please enter the name of the person whose address you wish to amend: ");
+
+
+        {
+            JOptionPane.showMessageDialog(null, "That name could not be found!");
+
+        }
+
+
+
+        for (i = 0; i < allBookings.size(); i++)
+            if (allBookings.get(i).getName().equalsIgnoreCase(name)) {
+                JOptionPane.showMessageDialog(null,"Found " + name + "!");
+
+                JOptionPane.showMessageDialog(null,"The current email for this person is " + allBookings.get(i).getEmail());
+                email = JOptionPane.showInputDialog("Please enter the new email for this person: ");
+                allBookings.get(i).setEmail(email);
+
+
+                JOptionPane.showMessageDialog(null,"The current car class this person wants is " + allBookings.get(i).getCarClass());
+                carClass = JOptionPane.showInputDialog("Please enter the new class of car for this person: ");
+                allBookings.get(i).setCarClass(carClass);
+
+
+                JOptionPane.showMessageDialog(null,"The no of days this person wants the car for is " + allBookings.get(i).getNoOfDays());
+                noOfDaysAsString = JOptionPane.showInputDialog("Please enter how many days the customer wants the car for: ");
+
+                allBookings.get(i).setCarClass(noOfDaysAsString);
+
+                JOptionPane.showMessageDialog(null,"Displaying updated state of this Person object .....\n" + allBookings.get(i));
+
+                break;
+
+            }
     }
 }
+
 
 
 
