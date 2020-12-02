@@ -16,7 +16,6 @@ public class MainMenu extends JFrame implements ActionListener {
     JMenuBar menuBar;
     JMenu carsMenu;
     JMenu bookingsMenu;
-    JMenu adminMenu;
 
     JMenuItem addCar;
     JMenuItem removeCar;
@@ -28,14 +27,13 @@ public class MainMenu extends JFrame implements ActionListener {
     JMenuItem cancelBooking;
     JMenuItem viewBookings;
 
-
     JPanel jp = new JPanel();
     JLabel jl = new JLabel();
 
     private static File file; //added by JB
 
 
-    public MainMenu() {
+    public MainMenu() throws IOException, ClassNotFoundException {
 
         super("Car Rental SYS");
 
@@ -115,7 +113,7 @@ public class MainMenu extends JFrame implements ActionListener {
         createFileMenu();
 
         readBookingsFromFile();
-
+        readCarsFromFile();
 
     }
 
@@ -128,7 +126,8 @@ public class MainMenu extends JFrame implements ActionListener {
         Car c3 = new Car("151-KY-6576", "Premium", "Opel", "Insignia", "Manual", "Petrol", 4);
         Car c4 = new Car("152-KY-6576", "Deluxe", "Volkswagon", "Passat", "Manual", "Diesel", 5);
 
-        allCars = new ArrayList<>(Arrays.asList(c1, c2, c3, c4));
+        if (!file.exists())
+            allCars = new ArrayList<>(Arrays.asList(c1, c2, c3, c4));
 
         Booking b1 = new Booking("John O Reilly", "john@gmail.com", "Economy", 1, new GregorianCalendar(2020, 11, 02));
         Booking b2 = new Booking("Clare Higgins", "clare@gmail.com", "Premium", 5, new GregorianCalendar(2020, 11, 28));
@@ -182,6 +181,8 @@ public class MainMenu extends JFrame implements ActionListener {
                 if (option == JOptionPane.YES_OPTION) {
                     try {
                         saveBookingsToFile();
+                        saveCarsToFile();
+
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
                     }
@@ -226,18 +227,18 @@ public class MainMenu extends JFrame implements ActionListener {
         }
     }
 
-    public void saveCarsToFile() throws IOException {
-
-
-        //put this code into a method called saveCarsToFile() and then call this when when a window-closing event occurs
-        //create a private inner class called WindowEventHandler and have that class inherit from the WindowAdapter class
-        //you'll override the windowClosing() method
-
+    public static void saveCarsToFile() throws IOException {
 
         File outFile = new File("cars.data");
         FileOutputStream outStream = new FileOutputStream(outFile);
         ObjectOutputStream objectOutStream = new ObjectOutputStream(outStream);
+
+        for (Car c : allCars) {
+            System.out.println(c);
+        }
+
         objectOutStream.writeObject(allCars); //in reality this writing would occur when you go to close the application
+        objectOutStream.close();
         outStream.close();
 
     }
@@ -246,15 +247,39 @@ public class MainMenu extends JFrame implements ActionListener {
     public static void readCarsFromFile() throws IOException, ClassNotFoundException {
         //put this code into a method called readCarsFromFile() and then call this when whe the application launches
 
-        File inFile = new File("cars.data");
-        FileInputStream inStream = new FileInputStream(inFile);
-        ObjectInputStream objectInStream = new ObjectInputStream(inStream);
-        allCars = (ArrayList<Car>) objectInStream.readObject();//in reality this reading would occur when the application is launched
-        inStream.close();
+        try {
+
+            file = new File("cars.data");
+
+            if (file.exists()) {
+
+                ObjectInputStream is = new ObjectInputStream(new FileInputStream(file));
+                allCars = (ArrayList<Car>) is.readObject();
+                is.close();
+
+                for (Car c : allCars) {
+                    System.out.println(c);
+                }
+
+                JOptionPane.showMessageDialog(null, file.getName() + " file loaded into the system", "Open", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                file.createNewFile();
+                JOptionPane.showMessageDialog(null, "File just created!!", "Created " + file.getName() + " file", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (ClassNotFoundException cnfe) {
+            JOptionPane.showMessageDialog(null, "Class of object deserialised not a match for anything used in this application", "Error", JOptionPane.ERROR_MESSAGE);
+            cnfe.printStackTrace();
+        } catch (FileNotFoundException fnfe) {
+            JOptionPane.showMessageDialog(null, "File not found", "Error", JOptionPane.ERROR_MESSAGE);
+            fnfe.printStackTrace();
+        } catch (IOException ioe) {
+            JOptionPane.showMessageDialog(null, "Problem reading from the file", "Error", JOptionPane.ERROR_MESSAGE);
+            ioe.printStackTrace();
+        }
     }
 
     public static void viewCars(ArrayList<Car> allCars) {
-
+/*
         String allCarData = "";
         Car cr;
         Iterator<Car> iterator = allCars.iterator();
@@ -265,10 +290,35 @@ public class MainMenu extends JFrame implements ActionListener {
         }
         JOptionPane.showMessageDialog(null, allCarData,
                 "List of all Bookings", JOptionPane.INFORMATION_MESSAGE);
+
+ */
+        JComboBox carsCombo = new JComboBox();
+        JTextArea output = new JTextArea();
+
+        output.setText("Booking Info:\n");
+        output.setBackground(Color.orange);
+
+        if(allCars.size() < 1) {
+            JOptionPane.showMessageDialog(null,"No bookings are on the system yet. Add Bookings please","Warning",JOptionPane.WARNING_MESSAGE);
+        }
+        else {
+            Iterator<Car> iterator = allCars.iterator();
+
+            while(iterator.hasNext()) {
+                carsCombo.addItem(iterator.next().getRegNo() + "\n");
+            }
+
+            JOptionPane.showMessageDialog(null,carsCombo,"Select Customer to view booking details",JOptionPane.PLAIN_MESSAGE);
+
+            int selected = carsCombo.getSelectedIndex();
+            output.append(allCars.get(selected).toString());
+
+            JOptionPane.showMessageDialog(null,output,"Booking Details",JOptionPane.PLAIN_MESSAGE);
+        }
     }
 
     public static void viewBookings(ArrayList<Booking> allBookings) {
-
+/*
         String allBookingData = "";
         Booking br;
         Iterator<Booking> iterator = allBookings.iterator();
@@ -280,6 +330,31 @@ public class MainMenu extends JFrame implements ActionListener {
         }
         JOptionPane.showMessageDialog(null, allBookingData,
                 "List of all Bookings", JOptionPane.INFORMATION_MESSAGE);
+
+ */
+        JComboBox bookingsCombo = new JComboBox();
+        JTextArea output = new JTextArea();
+
+        output.setText("Booking Info:\n");
+        output.setBackground(Color.orange);
+
+        if(allBookings.size() < 1) {
+            JOptionPane.showMessageDialog(null,"No bookings are on the system yet. Add Bookings please","Warning",JOptionPane.WARNING_MESSAGE);
+        }
+        else {
+            Iterator<Booking> iterator = allBookings.iterator();
+
+            while(iterator.hasNext()) {
+                bookingsCombo.addItem(iterator.next().getName() + "\n");
+            }
+
+            JOptionPane.showMessageDialog(null,bookingsCombo,"Select Customer to view booking details",JOptionPane.PLAIN_MESSAGE);
+
+            int selected = bookingsCombo.getSelectedIndex();
+            output.append(allBookings.get(selected).toString());
+
+            JOptionPane.showMessageDialog(null,output,"Booking Details",JOptionPane.PLAIN_MESSAGE);
+        }
     }
 
 
@@ -318,7 +393,7 @@ public class MainMenu extends JFrame implements ActionListener {
 
     public static void addCar(ArrayList<Car> allCarsList) {
 
-        String regNo = "", carClass = "", make = "", model = "", fuelType = "", transmission = "", occNoAsString = "";
+        String regNo = "", carClass = "", make = "", model = "", transmission = "", fuelType = "", occNoAsString = "";
 
         regNo = JOptionPane.showInputDialog("Please enter the Registration Number");
         carClass = JOptionPane.showInputDialog("Please enter the car class, (economy,premium,deluxe)");
@@ -329,13 +404,13 @@ public class MainMenu extends JFrame implements ActionListener {
         occNoAsString = JOptionPane.showInputDialog("Please enter the max Occupancy");
         int occNo = Integer.parseInt(occNoAsString);
 
-        Car c5 = new Car(regNo, carClass, make, model, fuelType, transmission, occNo);
+        Car c5 = new Car(regNo, carClass, make, model, transmission, fuelType, occNo);
 
         allCarsList.add(c5);
 
         JOptionPane.showMessageDialog(null, "The following Car details has been added to the system:" + "\n" + regNo +
-                "\n" + carClass + "\n" + make + "\n" + model + "\n" + fuelType +
-                "\n" + transmission + "\n" + occNoAsString);
+                "\n" + carClass + "\n" + make + "\n" + model + "\n" + transmission +
+                "\n" + fuelType + "\n" + occNoAsString);
     }
 
     public static void addBooking(ArrayList<Booking> allBookingsList) {

@@ -60,7 +60,7 @@ public class Booking implements Serializable {
     }
 
     public String toString() {
-        String str = "\nName: " + getName() + "  \nEmail: " + getEmail() + " \nCar Class: " + getCarClass() + "\nNo Of Days: " + getNoOfDays() + "\n Collect Date: ";
+        String str = "\nName: " + getName() + "  \nEmail: " + getEmail() + " \nCar Class: " + getCarClass() + "\nNo Of Days: " + getNoOfDays() + "\nCollect Date: ";
 
         if (collectDate == null)
             str += "No collect date specified";
