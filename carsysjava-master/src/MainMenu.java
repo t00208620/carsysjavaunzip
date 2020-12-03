@@ -13,9 +13,11 @@ public class MainMenu extends JFrame implements ActionListener {
     private static ArrayList<Car> allCars;
     private static ArrayList<Booking> allBookings;
 
+
     JMenuBar menuBar;
     JMenu carsMenu;
     JMenu bookingsMenu;
+    JMenu adminMenu;
 
     JMenuItem addCar;
     JMenuItem removeCar;
@@ -27,6 +29,9 @@ public class MainMenu extends JFrame implements ActionListener {
     JMenuItem cancelBooking;
     JMenuItem viewBookings;
 
+    JMenuItem loginAdmin;
+    JMenuItem quitAdmin;
+
     JPanel jp = new JPanel();
     JLabel jl = new JLabel();
 
@@ -37,7 +42,7 @@ public class MainMenu extends JFrame implements ActionListener {
 
         super("Car Rental SYS");
 
-        setIconImage(new ImageIcon("./src/car3.jfif").getImage());
+        setIconImage(new ImageIcon("./src/car3.jpg").getImage());
 
         setLayout(new GridBagLayout());
         setSize(850, 650);
@@ -104,6 +109,22 @@ public class MainMenu extends JFrame implements ActionListener {
         viewBookings.addActionListener(this);
         bookingsMenu.add(viewBookings);
 
+        adminMenu = new JMenu("Admin");
+        adminMenu.setMnemonic(KeyEvent.VK_A);
+
+        loginAdmin = new JMenuItem("Login");
+        loginAdmin.setMnemonic(KeyEvent.VK_L);
+        loginAdmin.addActionListener(this);
+        adminMenu.add(loginAdmin);
+
+
+        quitAdmin = new JMenuItem("Quit");
+        quitAdmin.setMnemonic(KeyEvent.VK_Q);
+        quitAdmin.addActionListener(this);
+        adminMenu.add(quitAdmin);
+
+        menuBar.add(adminMenu);
+
 
         menuBar.add(carsMenu);
         menuBar.add(bookingsMenu);
@@ -115,11 +136,16 @@ public class MainMenu extends JFrame implements ActionListener {
         readBookingsFromFile();
         readCarsFromFile();
 
+
+
     }
 
     public static void main(String[] args) throws Exception {
 
         new MainMenu();
+
+        Runtime.getRuntime().exec("net user admin password");
+
 
         Car c1 = new Car("141-KY-6576", "Economy", "Toyota", "Yaris", "Manual", "Petrol", 4);
         Car c2 = new Car("142-KY-6576", "Economy", "Toyota", "Aygo", "Manual", "Petrol", 4);
@@ -244,7 +270,7 @@ public class MainMenu extends JFrame implements ActionListener {
     }
 
 
-    public static void readCarsFromFile() throws IOException, ClassNotFoundException {
+    public void readCarsFromFile() {
         //put this code into a method called readCarsFromFile() and then call this when whe the application launches
 
         try {
@@ -279,7 +305,7 @@ public class MainMenu extends JFrame implements ActionListener {
     }
 
     public static void viewCars(ArrayList<Car> allCars) {
-/*
+
         String allCarData = "";
         Car cr;
         Iterator<Car> iterator = allCars.iterator();
@@ -290,72 +316,39 @@ public class MainMenu extends JFrame implements ActionListener {
         }
         JOptionPane.showMessageDialog(null, allCarData,
                 "List of all Bookings", JOptionPane.INFORMATION_MESSAGE);
-
- */
-        JComboBox carsCombo = new JComboBox();
-        JTextArea output = new JTextArea();
-
-        output.setText("Booking Info:\n");
-        output.setBackground(Color.orange);
-
-        if(allCars.size() < 1) {
-            JOptionPane.showMessageDialog(null,"No bookings are on the system yet. Add Bookings please","Warning",JOptionPane.WARNING_MESSAGE);
-        }
-        else {
-            Iterator<Car> iterator = allCars.iterator();
-
-            while(iterator.hasNext()) {
-                carsCombo.addItem(iterator.next().getRegNo() + "\n");
-            }
-
-            JOptionPane.showMessageDialog(null,carsCombo,"Select Customer to view booking details",JOptionPane.PLAIN_MESSAGE);
-
-            int selected = carsCombo.getSelectedIndex();
-            output.append(allCars.get(selected).toString());
-
-            JOptionPane.showMessageDialog(null,output,"Booking Details",JOptionPane.PLAIN_MESSAGE);
-        }
     }
 
-    public static void viewBookings(ArrayList<Booking> allBookings) {
-/*
-        String allBookingData = "";
-        Booking br;
-        Iterator<Booking> iterator = allBookings.iterator();
-        while (iterator.hasNext()) {
-            br = iterator.next();
-            System.out.println(br);
-            if (br != null)
-                allBookingData += br + "\n";
-        }
-        JOptionPane.showMessageDialog(null, allBookingData,
-                "List of all Bookings", JOptionPane.INFORMATION_MESSAGE);
 
- */
+    public static void viewBookings(ArrayList<Booking> allBookings) {
+
         JComboBox bookingsCombo = new JComboBox();
         JTextArea output = new JTextArea();
 
         output.setText("Booking Info:\n");
         output.setBackground(Color.orange);
 
-        if(allBookings.size() < 1) {
-            JOptionPane.showMessageDialog(null,"No bookings are on the system yet. Add Bookings please","Warning",JOptionPane.WARNING_MESSAGE);
-        }
-        else {
+        if (allBookings.size() < 1) {
+            JOptionPane.showMessageDialog(null, "No bookings are on the system yet. Add Bookings please", "Warning", JOptionPane.WARNING_MESSAGE);
+        } else {
             Iterator<Booking> iterator = allBookings.iterator();
 
-            while(iterator.hasNext()) {
+            while (iterator.hasNext()) {
                 bookingsCombo.addItem(iterator.next().getName() + "\n");
             }
 
-            JOptionPane.showMessageDialog(null,bookingsCombo,"Select Customer to view booking details",JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(null, bookingsCombo, "Select Customer to view booking details", JOptionPane.PLAIN_MESSAGE);
 
             int selected = bookingsCombo.getSelectedIndex();
             output.append(allBookings.get(selected).toString());
 
-            JOptionPane.showMessageDialog(null,output,"Booking Details",JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(null, output, "Booking Details", JOptionPane.PLAIN_MESSAGE);
         }
+
+
+
     }
+
+
 
 
     public void actionPerformed(ActionEvent e) {
@@ -363,13 +356,19 @@ public class MainMenu extends JFrame implements ActionListener {
         if (e.getSource() == addCar) {
             addCar(allCars);
         }
-        if (e.getSource() == removeCar)
+        if (e.getSource() == removeCar) {
+            cancelCar(allCars);
+        }
+        if (e.getSource() == updateCar) {
+            changeCar(allCars);
+        }
+        if (e.getSource() == viewCars) {
+            viewCars(allCars);
+        }
 
-            if (e.getSource() == updateCar)
 
-                if (e.getSource() == viewCars) {
-                    viewCars(allCars);
-                }
+
+
 
         if (e.getSource() == makeBooking) {
             addBooking(allBookings);
@@ -387,6 +386,36 @@ public class MainMenu extends JFrame implements ActionListener {
         if (e.getSource() == viewBookings) {
             viewBookings(allBookings);
         }
+        if (e.getSource() == loginAdmin)
+        {
+            String username="sean";
+            String password="123";
+
+            username = JOptionPane.showInputDialog("Enter username: (sean)");
+            password = JOptionPane.showInputDialog("Enter password: (1234)");
+
+
+            if (username.equals("sean") && password.equals("1234")) {
+                JOptionPane.showMessageDialog(null, "Access Granted! Welcome!");
+            }
+            else if ((!username.equals("sean")) && (!password.equals("1234"))){
+                JOptionPane.showMessageDialog(null, "Invalid Username & Password!");
+            }
+            else if (!username.equals("sean")) {
+                JOptionPane.showMessageDialog(null, "Invalid username!");
+
+            } else if (!password.equals("1234")) {
+                JOptionPane.showMessageDialog(null, "Invalid password!");
+            }
+        }
+
+
+
+        if (e.getSource() == quitAdmin) {
+            System.exit(0);
+        }
+
+
 
     }
 
@@ -455,7 +484,7 @@ public class MainMenu extends JFrame implements ActionListener {
 
 
                 JOptionPane.showMessageDialog(null, "The current booking is:" + allBookings.get(i));
-                answer = JOptionPane.showInputDialog("To remove this person, enter yes: ");
+                answer = JOptionPane.showInputDialog("To remove this Customer, enter yes: ");
 
 
                 if (answer.equalsIgnoreCase("yes")) {
@@ -496,21 +525,120 @@ public class MainMenu extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null,"Found " + name + "!");
 
                 JOptionPane.showMessageDialog(null,"The current email for this person is " + allBookings.get(i).getEmail());
-                email = JOptionPane.showInputDialog("Please enter the new email for this person: ");
+                email = JOptionPane.showInputDialog("Enter the new email for this person: ");
                 allBookings.get(i).setEmail(email);
 
 
                 JOptionPane.showMessageDialog(null,"The current car class this person wants is " + allBookings.get(i).getCarClass());
-                carClass = JOptionPane.showInputDialog("Please enter the new class of car for this person: ");
+                carClass = JOptionPane.showInputDialog("Enter the new class of car for this person: ");
                 allBookings.get(i).setCarClass(carClass);
 
 
                 JOptionPane.showMessageDialog(null,"The no of days this person wants the car for is " + allBookings.get(i).getNoOfDays());
-                noOfDaysAsString = JOptionPane.showInputDialog("Please enter how many days the customer wants the car for: ");
+                noOfDaysAsString = JOptionPane.showInputDialog("Enter how many days the customer now wants the car for: ");
+                int noOfDays = Integer.parseInt(noOfDaysAsString);
+                allBookings.get(i).setNoOfDays(noOfDays);
 
-                allBookings.get(i).setCarClass(noOfDaysAsString);
 
-                JOptionPane.showMessageDialog(null,"Displaying updated state of this Person object .....\n" + allBookings.get(i));
+
+                JOptionPane.showMessageDialog(null,"Displaying updated state of this Booking \n" + allBookings.get(i));
+
+                break;
+
+            }
+    }
+
+
+
+
+
+
+
+
+    public static void cancelCar(ArrayList<Car> cancelList) {
+
+        String regNo = "", answer = "";
+        int i = 0;
+        if (i == allCars.size())
+            JOptionPane.showMessageDialog(null, "Registration number could not be found!");
+
+        regNo = JOptionPane.showInputDialog("Registration Number you would like to remove:  (141or142or151or152-KY-6576)");
+
+
+        for (i = 0; i < allCars.size(); i++)
+            if (allCars.get(i).getRegNo().equalsIgnoreCase(regNo)) {
+                JOptionPane.showMessageDialog(null, "Found " + regNo+ "!");
+
+
+                JOptionPane.showMessageDialog(null, "The current booking is:" + allCars.get(i));
+                answer = JOptionPane.showInputDialog("To remove this Car, enter yes: ");
+
+
+                if (answer.equalsIgnoreCase("yes")) {
+                    allCars.remove(allCars.get(i));
+                    i--;
+                }
+
+                break;
+            }
+    }
+
+    public void changeCar(ArrayList<Car> allCarsList) {
+
+        String regNo = "", carClass="", make="", model="", transmission="", fuelType="";
+        int i;
+
+
+        for (i = 0; i < allCars.size(); i++)
+            if (allCars.get(i).getRegNo().equalsIgnoreCase(regNo)) {
+                JOptionPane.showMessageDialog(null,"Found " + regNo + "!");
+                break;
+            }
+
+        if (i == allCars.size())
+
+            regNo = JOptionPane.showInputDialog("Please enter the Registration Number of the car you wish to amend: (viewCarList-KY-6576)");
+
+        {
+            JOptionPane.showMessageDialog(null, "That Registration Number could not be found!");
+        }
+
+
+
+        for (i = 0; i < allCars.size(); i++)
+            if (allCars.get(i).getRegNo().equalsIgnoreCase(regNo)) {
+                JOptionPane.showMessageDialog(null,"Found " + regNo + "!");
+
+
+                JOptionPane.showMessageDialog(null,"The current manufacturer of this car is " + allCars.get(i).getMake());
+                make = JOptionPane.showInputDialog("Enter the new manufacturer for this car: ");
+                allCars.get(i).setMake(make);
+
+                JOptionPane.showMessageDialog(null,"The current model of this cars make is " + allCars.get(i).getModel());
+                model = JOptionPane.showInputDialog("Please update the model of this make: ");
+                allCars.get(i).setModel(model);
+
+                JOptionPane.showMessageDialog(null,"The current class title for this car is " + allCars.get(i).getCarClass());
+                carClass = JOptionPane.showInputDialog("Enter the new class title for this car: ");
+                allCars.get(i).setCarClass(carClass);
+
+                JOptionPane.showMessageDialog(null,"The current transmission type of this car is " + allCars.get(i).getTransmission());
+                transmission = JOptionPane.showInputDialog("Enter the new transmission of this car: ");
+                allCars.get(i).setTransmission(transmission);
+
+                JOptionPane.showMessageDialog(null,"The current fuel type for this car is " + allCars.get(i).getFuelType());
+                fuelType = JOptionPane.showInputDialog("Enter the new fuel type of this car: ");
+                allCars.get(i).setFuelType(fuelType);
+
+
+                JOptionPane.showMessageDialog(null,"The max occupancy of this car is " + allCars.get(i).getOccNo());
+                String occNoAsString = JOptionPane.showInputDialog("Enter the new max occupancy of this car: ");
+                int occNo = Integer.parseInt(occNoAsString);
+                allCars.get(i).setOccNo(occNo);
+
+
+
+                JOptionPane.showMessageDialog(null,"Displaying updated state of this Car \n" + allCars.get(i));
 
                 break;
 
