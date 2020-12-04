@@ -562,7 +562,7 @@ public class MainMenu extends JFrame implements ActionListener {
         if (i == allCars.size())
             JOptionPane.showMessageDialog(null, "Registration number could not be found!");
 
-        regNo = JOptionPane.showInputDialog("Registration Number you would like to remove:  (141or142or151or152-KY-6576)");
+        regNo = JOptionPane.showInputDialog("Registration Number you would like to remove:  (142or151or152-KY-6576)");
 
 
         for (i = 0; i < allCars.size(); i++)
