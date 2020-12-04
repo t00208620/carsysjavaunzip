@@ -42,7 +42,7 @@ public class MainMenu extends JFrame implements ActionListener {
 
         super("Car Rental SYS");
 
-        setIconImage(new ImageIcon("./src/car3.jpg").getImage());
+        setIconImage(new ImageIcon("carsysjava-master\\src\\car3.jpg").getImage());
 
         setLayout(new GridBagLayout());
         setSize(850, 650);
@@ -51,7 +51,7 @@ public class MainMenu extends JFrame implements ActionListener {
 
         setJMenuBar(menuBar);
 
-        jl.setIcon(new ImageIcon("C:\\Users\\sean\\Desktop\\carsys\\car4.png"));
+        jl.setIcon(new ImageIcon("carsysjava-master\\src\\car4.png"));
         jp.add(jl);
         add(jp);
         validate();
@@ -449,7 +449,7 @@ public class MainMenu extends JFrame implements ActionListener {
 
         name = JOptionPane.showInputDialog("Enter the customers name");
         email = JOptionPane.showInputDialog("Enter the customers email address");
-        carClass = JOptionPane.showInputDialog("Enter the Class of Car wanted (Premium,economy or deluxe)");
+        carClass = JOptionPane.showInputDialog("Enter the Class of Car wanted (Premium,Economy,Deluxe)");
         noOfDaysAsString = JOptionPane.showInputDialog("Enter the Number Of Days the car is to be rented for");
         collectDate = JOptionPane.showInputDialog("Enter the date the car is to be collected (DD-MM-YYYY)");
         int noOfDays = Integer.parseInt(noOfDaysAsString);
