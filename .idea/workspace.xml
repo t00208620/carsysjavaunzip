@@ -24,8 +24,6 @@
   <component name="ChangeListManager">
     <list default="true" id="9fa85fef-044f-41b4-90ed-98e650dfb78b" name="Default Changelist" comment="final commit 04-12-2020">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cars.data" beforeDir="false" afterPath="$PROJECT_DIR$/cars.data" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/carsysjava-master/src/MainMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/carsysjava-master/src/MainMenu.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,19 +61,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Application.MainMenu" />
@@ -92,6 +77,8 @@
       <updated>1606853496284</updated>
       <workItem from="1606853497335" duration="28498000" />
       <workItem from="1607026586998" duration="7892000" />
+      <workItem from="1607099534163" duration="23000" />
+      <workItem from="1607107387321" duration="429000" />
     </task>
     <task id="LOCAL-00001" summary="tuesday night">
       <created>1606864139648</created>
